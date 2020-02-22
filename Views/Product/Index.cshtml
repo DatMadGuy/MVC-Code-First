@@ -1,0 +1,91 @@
+﻿@model MVCTest.ViewModel.ProductVM
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+@section head {
+}
+
+<a href="/Category/Index">Category List</a>
+
+@using (Html.BeginForm("Create", "Product", FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(x => x.ProductID, htmlAttributes: new { @value = Model.ProductID })
+    <div style="width: 100%; float: left; overflow: hidden;">
+        <h4>Create Product</h4>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Select Category</td>
+                    <td>@Html.DropDownListFor(x => x.CategoryID, new SelectList(Model.DDLCategoryList, "CategoryID", "CategoryName")) </td>
+                    <td>@Html.ValidationMessageFor(x => x.CategoryID, "", htmlAttributes: new { @style = "color: red" })</td>
+                </tr>
+                <tr>
+                    <td>Product Name</td>
+                    <td>@Html.TextBoxFor(x => x.ProductName)</td>
+                    <td>@Html.ValidationMessageFor(x => x.ProductName, "", htmlAttributes: new { @style = "color: red" })</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="submit" value="@(Model.ProductID == 0 ? "Create" : "Update")" />
+                        <input type="reset" name="reset" value="Reset" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+<div style="width: 100%; float: left; overflow: hidden;">
+    <h4>Product List</h4>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category ID</th>
+                <th>Category Name</th>
+                <th>Is Active</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ProductList != null && Model.ProductList.Count > 0)
+            {
+                foreach (var item in Model.ProductList)
+                {
+                <tr>
+                    <td>@item.ProductID</td>
+                    <td>@item.ProductName</td>
+                    <td>@item.CategoryID</td>
+                    <td>@item.CategoryName</td>
+                    <td>@item.IsActive</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Index", new { ProductID = item.ProductID, page = Model.ProductList.PageNumber }) |
+                        @Html.ActionLink("Delete", "Delete", new { ProductID = item.ProductID, page = Model.ProductList.PageNumber })
+                    </td>
+                </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" style="text-align: center">No Record found!!!</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@Html.PagedListPager(Model.ProductList, page => Url.Action("Index", routeValues: new { page }))
+
+<div>
+    Page @(Model.ProductList.PageCount < Model.ProductList.PageNumber ? 0 : Model.ProductList.PageNumber) of @(Model.ProductList.PageCount)
+</div>
+
+@section script {
+
+}

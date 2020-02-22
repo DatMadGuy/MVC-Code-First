@@ -1,0 +1,86 @@
+﻿@model MVCTest.ViewModel.CategoryVM
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+
+@section head {
+}
+
+<a href="/Product/Index">Product List</a>
+
+@using (Html.BeginForm("Create", "Category", FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(x => x.CategoryID, htmlAttributes: new { @value = Model.CategoryID })
+    <div style="width: 100%; float: left; overflow: hidden;">
+        <h4>Create Category</h4>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Category Name</td>
+                    <td>@Html.TextBoxFor(x => x.CategoryName)</td>
+                    <td>@Html.ValidationMessageFor(x => x.CategoryName, "", htmlAttributes: new { @style = "color: red" })</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="submit" value="@(Model.CategoryID == 0 ? "Create" : "Update")" />
+                        <input type="reset" name="reset" value="Reset" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+<div style="width: 100%; float: left; overflow: hidden;">
+    <h4>Category List</h4>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Category ID</th>
+                <th>Category Name</th>
+                <th>Created Date</th>
+                <th>Modified Date</th>
+                <th>Is Active</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.CategoryList != null && Model.CategoryList.Count > 0)
+            {
+                foreach (var item in Model.CategoryList)
+                {
+                <tr>
+                    <td>@item.CategoryID</td>
+                    <td>@item.CategoryName</td>
+                    <td>@item.WhenEntered</td>
+                    <td>@item.WhenModified</td>
+                    <td>@item.IsActive</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Index", new { CategoryID = item.CategoryID, page = Model.CategoryList.PageNumber }) |
+                        @Html.ActionLink("Delete", "Delete", new { CategoryID = item.CategoryID, page = Model.CategoryList.PageNumber })
+                    </td>
+                </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" style="text-align: center">No Record found!!!</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@Html.PagedListPager(Model.CategoryList, page => Url.Action("Index", routeValues: new { page }))
+
+<div>
+    Page @(Model.CategoryList.PageCount < Model.CategoryList.PageNumber ? 0 : Model.CategoryList.PageNumber) of @(Model.CategoryList.PageCount)
+</div>
+
+@section script {
+
+}
